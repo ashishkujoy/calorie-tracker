@@ -3,6 +3,17 @@ import logger from "./lib/logger.js";
 
 let client;
 
+const ensureIndexes = async (db) => {
+  await db.collection("users").createIndexes([
+    { key: { googleId: 1 }, unique: true },
+    { key: { email: 1 }, unique: true },
+  ]);
+  await db.collection("refreshTokens").createIndex(
+    { expiresAt: 1 },
+    { expireAfterSeconds: 0 },
+  );
+};
+
 export const connectDb = async () => {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
@@ -12,9 +23,11 @@ export const connectDb = async () => {
 
   client = new MongoClient(uri);
   await client.connect();
+  const db = client.db();
+  await ensureIndexes(db);
   logger.info("Connected to MongoDB");
-  return client.db();
-}
+  return db;
+};
 
 export const closeDb = async () => {
   if (client) {

@@ -78,13 +78,13 @@ Define the two MongoDB collections from the spec: `users` and `refreshTokens`.
 - Models export plain functions, not classes
 
 **Acceptance Criteria:**
-- [ ] `upsertUser({ googleId, email, name, avatarUrl })` creates or updates a user, returns the user doc
-- [ ] `findUserById(id)` returns user or null
-- [ ] `createRefreshToken({ userId, token, expiresAt })` stores a hashed token
-- [ ] `findRefreshToken(rawToken)` finds by SHA-256 hash, returns doc or null
-- [ ] `deleteRefreshToken(rawToken)` removes by hash
-- [ ] Indexes created on first connection (called from `src/db.js`)
-- [ ] Tests: each model function with a real in-memory MongoDB (use `mongodb-memory-server`)
+- [x] `upsertUser({ googleId, email, name, avatarUrl })` creates or updates a user, returns the user doc
+- [x] `findUserById(id)` returns user or null
+- [x] `createRefreshToken({ userId, token, expiresAt })` stores a hashed token
+- [x] `findRefreshToken(rawToken)` finds by SHA-256 hash, returns doc or null
+- [x] `deleteRefreshToken(rawToken)` removes by hash
+- [x] Indexes created on first connection (called from `src/db.js`)
+- [x] Tests: each model function with a real in-memory MongoDB (use `mongodb-memory-server`)
 
 ---
 
