@@ -106,11 +106,11 @@ Thin utility module for issuing and verifying JWTs and generating refresh tokens
 - No business logic here — pure functions only
 
 **Acceptance Criteria:**
-- [ ] `signAccessToken` produces a verifiable JWT with correct `sub`, `email`, `name` claims
-- [ ] `verifyAccessToken` throws on expired tokens, wrong signature, and malformed input
-- [ ] `generateRefreshToken` returns a string of sufficient entropy (≥ 32 bytes)
-- [ ] `hashToken` is deterministic — same input always produces same output
-- [ ] Tests: sign→verify roundtrip, expired token rejection, tampered token rejection
+- [x] `signAccessToken` produces a verifiable JWT with correct `sub`, `email`, `name` claims
+- [x] `verifyAccessToken` throws on expired tokens, wrong signature, and malformed input
+- [x] `generateRefreshToken` returns a string of sufficient entropy (≥ 32 bytes)
+- [x] `hashToken` is deterministic — same input always produces same output
+- [x] Tests: sign→verify roundtrip, expired token rejection, tampered token rejection
 
 ---
 

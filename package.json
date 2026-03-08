@@ -17,6 +17,7 @@
     "@langchain/ollama": "^1.2.6",
     "dotenv": "^17.3.1",
     "hono": "^4.12.5",
+    "jsonwebtoken": "^9.0.3",
     "langchain": "^1.2.30",
     "mongodb": "^7.1.0",
     "pino": "^10.3.1",

@@ -1,9 +1,6 @@
-import { createHash } from "crypto";
+import { hashToken } from "../lib/jwt.js";
 
 const col = (db) => db.collection("refreshTokens");
-
-const hashToken = (rawToken) =>
-  createHash("sha256").update(rawToken).digest("hex");
 
 export const createRefreshToken = async (db, { userId, token, expiresAt }) => {
   const doc = { userId, token: hashToken(token), expiresAt, createdAt: new Date() };
