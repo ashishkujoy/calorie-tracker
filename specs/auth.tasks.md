@@ -206,12 +206,12 @@ A Hono middleware that protects routes by validating the JWT access token.
 - Single responsibility: only validates the token, nothing else
 
 **Acceptance Criteria:**
-- [ ] Valid JWT passes through and `ctx.get('user')` is populated downstream
-- [ ] Missing `Authorization` header → `401`
-- [ ] Malformed header (no `Bearer` prefix) → `401`
-- [ ] Expired token → `401`
-- [ ] Tampered/invalid signature → `401`
-- [ ] Tests: all five cases above using a test Hono app with a dummy protected route
+- [x] Valid JWT passes through and `ctx.get('user')` is populated downstream
+- [x] Missing `Authorization` header → `401`
+- [x] Malformed header (no `Bearer` prefix) → `401`
+- [x] Expired token → `401`
+- [x] Tampered/invalid signature → `401`
+- [x] Tests: all five cases above using a test Hono app with a dummy protected route
 
 ---
 
