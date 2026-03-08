@@ -179,12 +179,12 @@ Implement token rotation (refresh) and session termination (logout).
 - Reuse `findRefreshToken`, `deleteRefreshToken`, `createRefreshToken` from the model
 
 **Acceptance Criteria:**
-- [ ] `/auth/refresh` with valid token returns new `accessToken` and rotates refresh token cookie
-- [ ] `/auth/refresh` with expired or unknown token returns `401`
-- [ ] `/auth/refresh` with no cookie returns `401`
-- [ ] `/auth/logout` deletes token and clears cookie regardless of whether token exists
-- [ ] Old refresh token is unusable after rotation
-- [ ] Tests: refresh happy path, expired token, missing token, logout idempotency
+- [x] `/auth/refresh` with valid token returns new `accessToken` and rotates refresh token cookie
+- [x] `/auth/refresh` with expired or unknown token returns `401`
+- [x] `/auth/refresh` with no cookie returns `401`
+- [x] `/auth/logout` deletes token and clears cookie regardless of whether token exists
+- [x] Old refresh token is unusable after rotation
+- [x] Tests: refresh happy path, expired token, missing token, logout idempotency
 
 ---
 

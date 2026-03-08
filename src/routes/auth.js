@@ -2,8 +2,8 @@ import { Hono } from "hono";
 import { getCookie, setCookie, deleteCookie } from "hono/cookie";
 import { randomBytes } from "crypto";
 import { OAuth2Client } from "google-auth-library";
-import { upsertUser } from "../models/user.js";
-import { createRefreshToken } from "../models/refreshToken.js";
+import { upsertUser, findUserById } from "../models/user.js";
+import { createRefreshToken, findRefreshToken, deleteRefreshToken } from "../models/refreshToken.js";
 import { signAccessToken, generateRefreshToken } from "../lib/jwt.js";
 import logger from "../lib/logger.js";
 
@@ -71,6 +71,26 @@ const setRefreshCookie = (ctx, token, expires) => {
   });
 };
 
+const lookupValidRefreshToken = async (db, rawToken) => {
+  const doc = await findRefreshToken(db, rawToken);
+  if (!doc || doc.expiresAt < new Date()) return null;
+  return doc;
+};
+
+const rotateRefreshToken = async (db, oldRawToken, userId) => {
+  const user = await findUserById(db, userId.toString());
+  await deleteRefreshToken(db, oldRawToken);
+  const accessToken = signAccessToken({ id: user._id.toString(), email: user.email, name: user.name });
+  const rawRefreshToken = generateRefreshToken();
+  const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
+  await createRefreshToken(db, { userId: user._id, token: rawRefreshToken, expiresAt });
+  return { accessToken, rawRefreshToken, expiresAt };
+};
+
+const clearRefreshCookie = (ctx) => {
+  deleteCookie(ctx, REFRESH_COOKIE, { path: "/" });
+};
+
 // --- routes ---
 
 router.get("/google", (ctx) => {
@@ -106,6 +126,25 @@ router.get("/google/callback", async (ctx) => {
 
   setRefreshCookie(ctx, rawRefreshToken, expiresAt);
   return ctx.redirect(`${process.env.FRONTEND_URL}/#token=${accessToken}`);
+});
+
+router.post("/refresh", async (ctx) => {
+  const rawToken = getCookie(ctx, REFRESH_COOKIE);
+  if (!rawToken) return ctx.json({ error: "missing_token" }, 401);
+
+  const doc = await lookupValidRefreshToken(ctx.get("db"), rawToken);
+  if (!doc) return ctx.json({ error: "invalid_token" }, 401);
+
+  const { accessToken, rawRefreshToken, expiresAt } = await rotateRefreshToken(ctx.get("db"), rawToken, doc.userId);
+  setRefreshCookie(ctx, rawRefreshToken, expiresAt);
+  return ctx.json({ accessToken });
+});
+
+router.post("/logout", async (ctx) => {
+  const rawToken = getCookie(ctx, REFRESH_COOKIE);
+  if (rawToken) await deleteRefreshToken(ctx.get("db"), rawToken);
+  clearRefreshCookie(ctx);
+  return ctx.body(null, 204);
 });
 
 export default router;

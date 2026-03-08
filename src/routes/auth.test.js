@@ -1,4 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi, beforeEach } from "vitest";
+import { createRefreshToken } from "../models/refreshToken.js";
+import { ObjectId } from "mongodb";
 import { createTestDb } from "../test/createTestDb.js";
 import { createApp } from "../server.js";
 
@@ -16,9 +18,7 @@ vi.mock("google-auth-library", () => ({
   }),
 }));
 
-// Mock fetch for Google token exchange
 const mockFetch = vi.fn();
-vi.stubGlobal("fetch", mockFetch);
 
 let db;
 let closeDb;
@@ -32,12 +32,14 @@ beforeAll(async () => {
   process.env.GOOGLE_CALLBACK_URL = "http://localhost:3000/auth/google/callback";
   process.env.FRONTEND_URL = "http://localhost:5173";
 
+  vi.stubGlobal("fetch", mockFetch);
   ({ db, close: closeDb } = await createTestDb());
   app = createApp(db);
 });
 
 afterAll(async () => {
   await closeDb();
+  vi.unstubAllGlobals();
 });
 
 const mockTokenExchangeSuccess = () => {
@@ -123,5 +125,97 @@ describe("GET /auth/google/callback", () => {
 
     const users = await db.collection("users").find({ googleId: "google-uid-123" }).toArray();
     expect(users).toHaveLength(1);
+  });
+});
+
+describe("POST /auth/refresh", () => {
+  let validRawToken;
+  const userId = new ObjectId();
+
+  beforeEach(async () => {
+    validRawToken = "raw-refresh-token-" + Math.random();
+    await createRefreshToken(db, {
+      userId,
+      token: validRawToken,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
+    // ensure a user doc exists for this userId
+    await db.collection("users").updateOne(
+      { _id: userId },
+      { $setOnInsert: { googleId: "g-refresh", email: "r@test.com", name: "Refresh User", avatarUrl: "", createdAt: new Date(), updatedAt: new Date() } },
+      { upsert: true },
+    );
+  });
+
+  it("returns 401 with no cookie", async () => {
+    const res = await app.request("/auth/refresh", { method: "POST" });
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 401 with unknown token", async () => {
+    const res = await app.request("/auth/refresh", {
+      method: "POST",
+      headers: { Cookie: "refreshToken=unknown-token" },
+    });
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 401 with expired token", async () => {
+    const expiredToken = "expired-token-" + Math.random();
+    await createRefreshToken(db, {
+      userId,
+      token: expiredToken,
+      expiresAt: new Date(Date.now() - 1000),
+    });
+    const res = await app.request("/auth/refresh", {
+      method: "POST",
+      headers: { Cookie: `refreshToken=${expiredToken}` },
+    });
+    expect(res.status).toBe(401);
+  });
+
+  it("happy path: returns new accessToken and rotates the cookie", async () => {
+    const res = await app.request("/auth/refresh", {
+      method: "POST",
+      headers: { Cookie: `refreshToken=${validRawToken}` },
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.accessToken).toBeTruthy();
+    expect(res.headers.get("set-cookie")).toContain("refreshToken=");
+  });
+
+  it("old token is unusable after rotation", async () => {
+    await app.request("/auth/refresh", {
+      method: "POST",
+      headers: { Cookie: `refreshToken=${validRawToken}` },
+    });
+    const res = await app.request("/auth/refresh", {
+      method: "POST",
+      headers: { Cookie: `refreshToken=${validRawToken}` },
+    });
+    expect(res.status).toBe(401);
+  });
+});
+
+describe("POST /auth/logout", () => {
+  it("returns 204 and clears cookie", async () => {
+    const rawToken = "logout-token-" + Math.random();
+    await createRefreshToken(db, {
+      userId: new ObjectId(),
+      token: rawToken,
+      expiresAt: new Date(Date.now() + 1000),
+    });
+    const res = await app.request("/auth/logout", {
+      method: "POST",
+      headers: { Cookie: `refreshToken=${rawToken}` },
+    });
+    expect(res.status).toBe(204);
+    expect(res.headers.get("set-cookie")).toContain("refreshToken=;");
+  });
+
+  it("returns 204 even with no cookie (idempotent)", async () => {
+    const res = await app.request("/auth/logout", { method: "POST" });
+    expect(res.status).toBe(204);
   });
 });
