@@ -142,13 +142,13 @@ Implement the two Google OAuth endpoints: the redirect initiator and the callbac
 - Use `google-auth-library` only for `id_token` verification — not for the full OAuth flow
 
 **Acceptance Criteria:**
-- [ ] `GET /auth/google` redirects to Google with correct `client_id`, `scope`, `state`, `redirect_uri`
-- [ ] Callback with valid `code` creates/updates user in DB and redirects to frontend with access token
-- [ ] Callback with mismatched `state` returns `400`
-- [ ] Callback with Google error query param returns `400`
-- [ ] New user is created on first login; existing user is updated on subsequent logins
-- [ ] Refresh token cookie is `httpOnly`, `Secure`, `SameSite=Strict`
-- [ ] Tests: mock Google token exchange; test state mismatch, happy path new user, happy path returning user
+- [x] `GET /auth/google` redirects to Google with correct `client_id`, `scope`, `state`, `redirect_uri`
+- [x] Callback with valid `code` creates/updates user in DB and redirects to frontend with access token
+- [x] Callback with mismatched `state` returns `400`
+- [x] Callback with Google error query param returns `400`
+- [x] New user is created on first login; existing user is updated on subsequent logins
+- [x] Refresh token cookie is `httpOnly`, `Secure`, `SameSite=Strict`
+- [x] Tests: mock Google token exchange; test state mismatch, happy path new user, happy path returning user
 
 ---
 
