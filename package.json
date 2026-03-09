@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "vitest run"
+    "test": "LOG_LEVEL=silent vitest run",
+    "t": "LOG_LEVEL=silent vitest run"
   },
   "keywords": [],
   "author": "",

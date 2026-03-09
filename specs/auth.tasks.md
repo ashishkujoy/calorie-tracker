@@ -235,7 +235,7 @@ Wire up the `requireAuth` middleware to `/meals/*` and `/stats/*` route groups a
 - Each handler should read `ctx.get('user')` and include `userId` in the response so the middleware wiring is verifiable
 
 **Acceptance Criteria:**
-- [ ] All `/meals/*` and `/stats/*` routes return `401` without a valid JWT
-- [ ] All routes return their stub response with a valid JWT
-- [ ] `userId` from the JWT is accessible inside every handler
-- [ ] Tests: unauthenticated request to each route, authenticated request to each route
+- [x] All `/meals/*` and `/stats/*` routes return `401` without a valid JWT
+- [x] All routes return their stub response with a valid JWT
+- [x] `userId` from the JWT is accessible inside every handler
+- [x] Tests: unauthenticated request to each route, authenticated request to each route
