@@ -3,15 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calorie Tracker — Dashboard</title>
+  <title>CalorieSnap</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body>
-  <main class="dashboard-page">
-    <div class="dashboard-card">
-      <h1>You're logged in</h1>
-      <p class="user-info" id="user-info">Loading…</p>
+<body class="cs-body">
+
+  <!-- Hidden: populated by dashboard.js for auth display / tests -->
+  <span id="user-info" class="sr-only"></span>
+
+  <!-- ── Header ───────────────────────────────────────────── -->
+  <header class="cs-header">
+    <div class="cs-logo-circle" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 2v7c0 1.1.9 2 2 2s2-.9 2-2V2"/>
+        <path d="M7 2v20"/>
+        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h0"/>
+        <path d="M18 13v9"/>
+      </svg>
     </div>
+    <div class="cs-header-text">
+      <div class="cs-app-name">CalorieSnap</div>
+      <div class="cs-tagline">Track your meals with AI</div>
+    </div>
+  </header>
+
+  <div class="cs-header-divider"></div>
+
+  <!-- ── Tab bar ──────────────────────────────────────────── -->
+  <nav class="cs-tab-bar" aria-label="Main navigation">
+    <button class="cs-tab cs-tab--active" data-tab="scan" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 2v7c0 1.1.9 2 2 2s2-.9 2-2V2"/>
+        <path d="M7 2v20"/>
+        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h0"/>
+        <path d="M18 13v9"/>
+      </svg>
+      Scan Meal
+    </button>
+    <button class="cs-tab" data-tab="history" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+        <polyline points="16 7 22 7 22 13"/>
+      </svg>
+      History
+    </button>
+  </nav>
+
+  <!-- ── Tab panels ───────────────────────────────────────── -->
+  <main class="cs-content">
+
+    <!-- Scan Meal panel -->
+    <div id="tab-scan" class="cs-tab-panel">
+      <div class="cs-card">
+        <div id="meal-scan"></div>
+      </div>
+    </div>
+
+    <!-- History panel -->
+    <div id="tab-history" class="cs-tab-panel" hidden>
+      <div class="cs-card cs-empty-state">
+        <svg class="cs-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <p class="cs-empty-title">No meals tracked yet</p>
+        <p class="cs-empty-subtitle">Upload your first meal to get started!</p>
+      </div>
+    </div>
+
   </main>
 
   <script type="module" src="/js/dashboard.js"></script>

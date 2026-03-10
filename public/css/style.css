@@ -6,12 +6,26 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #f0f2f5;
-  color: #1a1a1a;
+  background: #f5f5f7;
+  color: #111;
   min-height: 100dvh;
 }
 
-/* ── Layout ───────────────────────────────────────────────── */
+/* ── Utility ──────────────────────────────────────────────── */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Login page ───────────────────────────────────────────── */
 
 .page {
   display: flex;
@@ -32,8 +46,6 @@ body {
   align-items: center;
   gap: 1.5rem;
 }
-
-/* ── App name ─────────────────────────────────────────────── */
 
 .app-name {
   font-size: 1.5rem;
@@ -73,21 +85,17 @@ body {
   outline-offset: 2px;
 }
 
-/* Loading state */
 .google-btn[data-loading] {
   pointer-events: none;
   opacity: 0.75;
 }
 
-.google-btn[data-loading] .google-btn-text {
-  opacity: 0;
-}
-
+.google-btn[data-loading] .google-btn-text,
 .google-btn[data-loading] .google-logo {
   opacity: 0;
 }
 
-/* ── CSS-only spinner ─────────────────────────────────────── */
+/* ── CSS-only spinner (login) ─────────────────────────────── */
 
 .spinner {
   display: none;
@@ -107,7 +115,7 @@ body {
 }
 
 @keyframes spin {
-  to { transform: translateX(-50%) rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* ── Error banner ─────────────────────────────────────────── */
@@ -128,34 +136,411 @@ body {
   display: none;
 }
 
-/* ── Dashboard layout ─────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════
+   CalorieSnap Dashboard
+   ════════════════════════════════════════════════════════════ */
 
-.dashboard-page {
+.cs-body {
+  background: #f5f5f7;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+
+.cs-header {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+}
+
+.cs-logo-circle {
+  width: 52px;
+  height: 52px;
+  background: #3dba5a;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100dvh;
-  padding: 1.5rem;
+  flex-shrink: 0;
+  color: #fff;
 }
 
-.dashboard-card {
+.cs-logo-circle svg {
+  width: 24px;
+  height: 24px;
+}
+
+.cs-app-name {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #111;
+  line-height: 1.2;
+}
+
+.cs-tagline {
+  font-size: 13px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.cs-header-divider {
+  height: 1px;
+  background: #e8e8e8;
+}
+
+/* ── Tab bar ──────────────────────────────────────────────── */
+
+.cs-tab-bar {
+  display: flex;
+  background: #ebebeb;
+  border-radius: 50px;
+  padding: 4px;
+  margin: 18px 16px;
+  gap: 0;
+}
+
+.cs-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  white-space: nowrap;
+}
+
+.cs-tab svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.cs-tab--active {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-  padding: 2.5rem 2rem;
-  width: min(400px, 90vw);
+  color: #111;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Content area ─────────────────────────────────────────── */
+
+.cs-content {
+  padding: 0 16px 32px;
+}
+
+.cs-tab-panel[hidden] {
+  display: none;
+}
+
+/* ── Card ─────────────────────────────────────────────────── */
+
+.cs-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e8e8e8;
+  overflow: hidden;
+}
+
+/* ── Empty state (History) ────────────────────────────────── */
+
+.cs-empty-state {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px;
+  gap: 8px;
+  text-align: center;
 }
 
-.dashboard-card h1 {
-  font-size: 1.5rem;
+.cs-empty-icon {
+  width: 52px;
+  height: 52px;
+  color: #b8c0cc;
+  margin-bottom: 6px;
+}
+
+.cs-empty-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #444;
+}
+
+.cs-empty-subtitle {
+  font-size: 13px;
+  color: #9aa3af;
+}
+
+/* ── Upload zone (idle) ───────────────────────────────────── */
+
+.cs-upload-zone {
+  margin: 16px;
+  border: 1.5px dashed #cfd4da;
+  border-radius: 14px;
+  padding: 44px 20px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.cs-upload-icon {
+  width: 52px;
+  height: 52px;
+  color: #b8c0cc;
+  margin-bottom: 4px;
+}
+
+.cs-upload-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #111;
+  line-height: 1.3;
+}
+
+.cs-upload-subtitle {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.cs-choose-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 26px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+
+.cs-choose-btn:hover {
+  background: #2a2a2a;
+}
+
+.cs-choose-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Preview state ────────────────────────────────────────── */
+
+.cs-preview-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.cs-preview-img {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+.cs-preview-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.cs-upload-btn {
+  flex: 1;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cs-upload-btn:hover {
+  background: #2a2a2a;
+}
+
+.cs-cancel-btn {
+  background: #f0f2f5;
+  color: #555;
+  border: none;
+  border-radius: 50px;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cs-cancel-btn:hover {
+  background: #e4e6ea;
+}
+
+/* ── Loading state ────────────────────────────────────────── */
+
+.cs-loading-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 56px 20px;
+}
+
+.cs-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid #e8e8e8;
+  border-top-color: #3dba5a;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.cs-loading-text {
+  font-size: 14px;
+  color: #888;
+}
+
+/* ── Error state ──────────────────────────────────────────── */
+
+.cs-error-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.cs-error-msg {
+  font-size: 14px;
+  color: #c0392b;
+  line-height: 1.4;
+}
+
+.cs-retry-btn {
+  background: #f0f2f5;
+  color: #333;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.15s;
+}
+
+.cs-retry-btn:hover {
+  background: #e4e6ea;
+}
+
+/* ── Result state ─────────────────────────────────────────── */
+
+.cs-result-zone {
+  padding: 20px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cs-result-name {
+  font-size: 18px;
   font-weight: 700;
   color: #111;
 }
 
-.user-info {
-  color: #555;
-  font-size: 1rem;
+.cs-nutrient-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.cs-nutrient-card {
+  background: #f5f5f7;
+  border-radius: 12px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.cs-nutrient-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  line-height: 1;
+}
+
+.cs-nutrient-value span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #888;
+}
+
+.cs-nutrient-label {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.cs-result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.cs-result-table th {
+  text-align: left;
+  padding: 6px 0;
+  color: #888;
+  font-weight: 500;
+  border-bottom: 1px solid #eee;
+}
+
+.cs-result-table td {
+  padding: 9px 0;
+  color: #333;
+  border-bottom: 1px solid #f5f5f7;
+  vertical-align: middle;
+}
+
+.cs-result-table tfoot td {
+  font-weight: 600;
+  color: #111;
+  border-top: 1px solid #e8e8e8;
+  border-bottom: none;
+  padding-top: 10px;
+}
+
+.cs-scan-again-btn {
+  width: 100%;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cs-scan-again-btn:hover {
+  background: #2a2a2a;
 }
