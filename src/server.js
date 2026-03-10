@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { requestLogger } from "./middleware/requestLogger.js";
 import authRouter from "./routes/auth.js";
 import mealsRouter from "./routes/meals.js";
@@ -13,6 +14,8 @@ export const createApp = (db) => {
   });
 
   app.use("*", requestLogger);
+
+  app.use("/*", serveStatic({ root: "./public" }));
 
   app.get("/health", (ctx) => ctx.json({ status: "ok" }));
   app.route("/auth", authRouter);
