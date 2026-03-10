@@ -26,34 +26,8 @@
     </div>
   </main>
 
-  <script type="module">
-    import { getAuthState, extractErrorFromSearch, getErrorMessage } from '/js/auth.js';
-
-    const errorBanner = document.getElementById('error-banner');
-    const googleBtn = document.getElementById('google-btn');
-
-    // Show error if OAuth returned one
-    const errorCode = extractErrorFromSearch();
-    if (errorCode) {
-      const msg = getErrorMessage(errorCode);
-      if (msg) {
-        errorBanner.textContent = msg;
-        errorBanner.hidden = false;
-      }
-    }
-
-    // Dismiss error banner when user clicks sign-in
-    googleBtn.addEventListener('click', () => {
-      errorBanner.hidden = true;
-      googleBtn.setAttribute('data-loading', '');
-      googleBtn.setAttribute('aria-disabled', 'true');
-    });
-
-    // Redirect to dashboard if already authenticated
-    const state = await getAuthState();
-    if (state.status === 'authenticated') {
-      window.location.replace('/dashboard.html');
-    }
+  <script type="module" src="/js/index.js"></script>
+    
   </script>
 </body>
 </html>

@@ -14,24 +14,6 @@
     </div>
   </main>
 
-  <script type="module">
-    import { getAuthState, getStoredToken } from '/js/auth.js';
-
-    const state = await getAuthState();
-    if (state.status !== 'authenticated') {
-      window.location.replace('/');
-    } else {
-      // Decode JWT payload to get user info
-      try {
-        const parts = state.token.split('.');
-        const payload = JSON.parse(atob(parts[1]));
-        const name = payload.name || payload.email || 'User';
-        const email = payload.email ? ` (${payload.email})` : '';
-        document.getElementById('user-info').textContent = name + email;
-      } catch {
-        document.getElementById('user-info').textContent = 'Welcome!';
-      }
-    }
-  </script>
+  <script type="module" src="/js/dashboard.js"></script>
 </body>
 </html>
