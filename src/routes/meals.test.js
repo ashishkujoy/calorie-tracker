@@ -34,6 +34,7 @@ const makeToken = () =>
   signAccessToken({ id: USER_ID, email: "test@example.com", name: "Test User" });
 
 const MOCK_MEAL = {
+  mealName: "Grilled Chicken",
   items: [
     {
       name: "Grilled Chicken",
@@ -153,5 +154,164 @@ describe("POST /meals/scan-and-record — meal persistence", () => {
     await postImage(makeToken());
     const count = await db.collection("meals").countDocuments();
     expect(count).toBe(0);
+  });
+
+  it("response includes mealName when analysis succeeds", async () => {
+    runMealAnalysis.mockResolvedValue({ success: true, meal: MOCK_MEAL });
+    const res = await postImage(makeToken());
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(typeof body.meal.mealName).toBe("string");
+    expect(body.meal.mealName.length).toBeGreaterThan(0);
+  });
+
+  it("saves mealName and imageThumbnail in the database", async () => {
+    runMealAnalysis.mockResolvedValue({ success: true, meal: MOCK_MEAL });
+    await postImage(makeToken());
+    const doc = await db.collection("meals").findOne({});
+    expect(typeof doc.mealName).toBe("string");
+    expect(typeof doc.imageThumbnail).toBe("string");
+    expect(doc.imageThumbnail).toMatch(/^data:image\//);
+  });
+});
+
+describe("GET /meals/history", () => {
+  const OTHER_USER_ID = "507f1f77bcf86cd799439012";
+
+  beforeEach(async () => {
+    await db.collection("meals").deleteMany({});
+  });
+
+  it("returns 401 without auth token", async () => {
+    const res = await app.request("/meals/history");
+    expect(res.status).toBe(401);
+  });
+
+  it("returns empty meals array for user with no scans", async () => {
+    const res = await app.request("/meals/history", {
+      headers: { Authorization: `Bearer ${makeToken()}` },
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.meals).toEqual([]);
+  });
+
+  it("returns meals sorted by recordedAt descending", async () => {
+    const { ObjectId } = await import("mongodb");
+    const userId = new ObjectId(USER_ID);
+    const older = new Date("2026-03-10T10:00:00Z");
+    const newer = new Date("2026-03-12T12:00:00Z");
+    await db.collection("meals").insertMany([
+      { userId, recordedAt: older, mealName: "Old Meal", imageThumbnail: "data:image/jpeg;base64,old", items: [], totals: { calories_kcal: 100, protein_g: 5, fat_g: 3, carbohydrates_g: 10, fiber_g: 1, sugar_g: 1 } },
+      { userId, recordedAt: newer, mealName: "New Meal", imageThumbnail: "data:image/jpeg;base64,new", items: [], totals: { calories_kcal: 200, protein_g: 10, fat_g: 6, carbohydrates_g: 20, fiber_g: 2, sugar_g: 2 } },
+    ]);
+    const res = await app.request("/meals/history", {
+      headers: { Authorization: `Bearer ${makeToken()}` },
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.meals).toHaveLength(2);
+    expect(body.meals[0].mealName).toBe("New Meal");
+    expect(body.meals[1].mealName).toBe("Old Meal");
+  });
+
+  it("returns meals with id, mealName, imageThumbnail, recordedAt, totals fields", async () => {
+    const { ObjectId } = await import("mongodb");
+    await db.collection("meals").insertOne({
+      userId: new ObjectId(USER_ID),
+      recordedAt: new Date(),
+      mealName: "Test Meal",
+      imageThumbnail: "data:image/jpeg;base64,abc",
+      items: [],
+      totals: { calories_kcal: 300, protein_g: 20, fat_g: 10, carbohydrates_g: 15, fiber_g: 1, sugar_g: 1 },
+    });
+    const res = await app.request("/meals/history", {
+      headers: { Authorization: `Bearer ${makeToken()}` },
+    });
+    const body = await res.json();
+    const meal = body.meals[0];
+    expect(typeof meal.id).toBe("string");
+    expect(meal.mealName).toBe("Test Meal");
+    expect(meal.imageThumbnail).toBe("data:image/jpeg;base64,abc");
+    expect(typeof meal.recordedAt).toBe("string");
+    expect(typeof meal.totals.calories_kcal).toBe("number");
+    expect(meal.items).toBeUndefined();
+  });
+
+  it("does not return meals belonging to other users", async () => {
+    const { ObjectId } = await import("mongodb");
+    await db.collection("meals").insertOne({
+      userId: new ObjectId(OTHER_USER_ID),
+      recordedAt: new Date(),
+      mealName: "Other User Meal",
+      imageThumbnail: "data:image/jpeg;base64,x",
+      items: [],
+      totals: { calories_kcal: 100, protein_g: 5, fat_g: 3, carbohydrates_g: 10, fiber_g: 1, sugar_g: 1 },
+    });
+    const res = await app.request("/meals/history", {
+      headers: { Authorization: `Bearer ${makeToken()}` },
+    });
+    const body = await res.json();
+    expect(body.meals).toHaveLength(0);
+  });
+});
+
+describe("DELETE /meals/:id", () => {
+  beforeEach(async () => {
+    await db.collection("meals").deleteMany({});
+  });
+
+  it("returns 401 without auth token", async () => {
+    const res = await app.request("/meals/507f1f77bcf86cd799439099", { method: "DELETE" });
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 400 for a non-ObjectId string", async () => {
+    const res = await app.request("/meals/not-an-id", {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${makeToken()}` },
+    });
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body).toHaveProperty("error");
+  });
+
+  it("returns 404 when meal belongs to a different user", async () => {
+    const { ObjectId } = await import("mongodb");
+    const inserted = await db.collection("meals").insertOne({
+      userId: new ObjectId("507f1f77bcf86cd799439012"),
+      recordedAt: new Date(),
+      mealName: "Other Meal",
+      imageThumbnail: "data:image/jpeg;base64,x",
+      items: [],
+      totals: { calories_kcal: 100, protein_g: 5, fat_g: 3, carbohydrates_g: 10, fiber_g: 1, sugar_g: 1 },
+    });
+    const res = await app.request(`/meals/${inserted.insertedId.toString()}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${makeToken()}` },
+    });
+    expect(res.status).toBe(404);
+  });
+
+  it("returns deleted:true and removes the document", async () => {
+    const { ObjectId } = await import("mongodb");
+    const inserted = await db.collection("meals").insertOne({
+      userId: new ObjectId(USER_ID),
+      recordedAt: new Date(),
+      mealName: "My Meal",
+      imageThumbnail: "data:image/jpeg;base64,x",
+      items: [],
+      totals: { calories_kcal: 100, protein_g: 5, fat_g: 3, carbohydrates_g: 10, fiber_g: 1, sugar_g: 1 },
+    });
+    const id = inserted.insertedId.toString();
+    const res = await app.request(`/meals/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${makeToken()}` },
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.deleted).toBe(true);
+    const doc = await db.collection("meals").findOne({ _id: inserted.insertedId });
+    expect(doc).toBeNull();
   });
 });

@@ -13,5 +13,9 @@ export const runMealAnalysis = async (imageBuffer) => {
   if (!caloriesResult.success) {
     return { success: false, stage: "calories", error: caloriesResult.error };
   }
-  return { success: true, meal: caloriesResult.res };
+  const items = caloriesResult.res.items;
+  const mealName = items.length === 1
+    ? items[0].name
+    : `${items[0].name} with ${items[1].name}`;
+  return { success: true, meal: { mealName, ...caloriesResult.res } };
 };

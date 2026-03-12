@@ -544,3 +544,168 @@ body {
 .cs-scan-again-btn:hover {
   background: #2a2a2a;
 }
+
+/* ════════════════════════════════════════════════════════════
+   Meal History
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Group ────────────────────────────────────────────────── */
+
+.cs-history-group {
+  margin-bottom: 12px;
+}
+
+.cs-history-group-header {
+  background: #dbeafe;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cs-history-group-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cs-history-date {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111;
+}
+
+.cs-history-count {
+  background: #fff;
+  color: #444;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 50px;
+  padding: 2px 10px;
+}
+
+.cs-history-group-totals {
+  display: flex;
+  gap: 14px;
+  font-size: 14px;
+  color: #555;
+  flex-wrap: wrap;
+}
+
+/* ── Meal card ────────────────────────────────────────────── */
+
+.cs-history-meal-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+.cs-history-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f5f5f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cs-history-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cs-history-meal-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cs-history-meal-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cs-history-meal-time {
+  font-size: 13px;
+  color: #888;
+}
+
+.cs-history-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.cs-history-badge {
+  background: #f0f2f5;
+  color: #444;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 50px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+/* ── Delete button ────────────────────────────────────────── */
+
+.cs-history-delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #e74c3c;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.cs-history-delete-btn:hover {
+  background: #fdecea;
+}
+
+/* ── Group header collapse/expand ─────────────────────────── */
+
+.cs-history-group-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.cs-history-group-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cs-history-chevron {
+  width: 18px;
+  height: 18px;
+  color: #666;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.cs-history-group-header--collapsed .cs-history-chevron {
+  transform: rotate(180deg);
+}

@@ -161,7 +161,7 @@ export const initMealScan = (containerEl) => {
 
     const name = document.createElement("h2");
     name.className = "cs-result-name";
-    name.textContent = meal.name;
+    name.textContent = meal.mealName || meal.name || "Meal";
 
     // Macro grid
     const grid = document.createElement("div");

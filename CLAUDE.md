@@ -27,10 +27,10 @@ HTML5 / CSS3 / Vanilla JavaScript (ES Modules, no build step): Follow standard c
 - Ensure to use const fnName = () => { ... } for functions.
 
 ## Recent Changes
+- 002-meal-scan-history: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 001-meal-calorie-tracking: Added Node.js 20 (ESM — `"type": "module"`) + Hono 4 + `@hono/node-server`; `@langchain/ollama` + `@langchain/core`; Zod 4; `mongodb`; `jsonwebtoken`; Pino
 - 001-meal-image-scan: Added Node.js 20 (ESM, `"type": "module"`) + Vanilla JS (ES Modules, no build step) + Hono 4 + `@hono/node-server` (static serving + multipart parsing built-in); Vitest 4 (tests); jsdom (frontend tests)
 
-- 001-web-login-ui: Added HTML5 / CSS3 / Vanilla JavaScript (ES Modules, no build step) + `@hono/node-server/serve-static` (already installed, zero new deps)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

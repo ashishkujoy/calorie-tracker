@@ -12,6 +12,8 @@ const nutritionSchema = z.object({
 const mealRecordSchema = z.object({
   userId: z.any(),
   recordedAt: z.date(),
+  mealName: z.string(),
+  imageThumbnail: z.string(),
   items: z.array(
     z.object({
       name: z.string(),

@@ -1,5 +1,6 @@
-import { getAuthState } from "/js/auth.js";
+import { getAuthState, getStoredToken } from "/js/auth.js";
 import { initMealScan } from "/js/meal-scan.js";
+import { initMealHistory } from "/js/meal_history.js";
 
 const decodeJWT = (jwt) => {
   const parts = jwt.split(".");
@@ -11,6 +12,8 @@ const decodeJWT = (jwt) => {
 
 const setupTabs = () => {
   const tabs = document.querySelectorAll(".cs-tab");
+  let historyInitialised = false;
+
   tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       tabs.forEach((t) => t.classList.remove("cs-tab--active"));
@@ -18,6 +21,11 @@ const setupTabs = () => {
       document.querySelectorAll(".cs-tab-panel").forEach((panel) => {
         panel.hidden = panel.id !== `tab-${tab.dataset.tab}`;
       });
+
+      if (tab.dataset.tab === "history" && !historyInitialised) {
+        historyInitialised = true;
+        initMealHistory(document.getElementById("tab-history"), getStoredToken);
+      }
     });
   });
 };
