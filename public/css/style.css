@@ -687,10 +687,10 @@ body {
 
 /* ── Group header collapse/expand ─────────────────────────── */
 
-.cs-history-group-header {
-  cursor: pointer;
-  user-select: none;
-}
+/* NOTE: `.cs-history-group-header` interaction styles
+   (e.g., `cursor` and `user-select`) have been merged into the
+   primary `.cs-history-group-header` rule earlier in this file
+   to avoid duplicate selector declarations. */
 
 .cs-history-group-top {
   display: flex;
