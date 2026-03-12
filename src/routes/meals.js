@@ -30,6 +30,7 @@ mealsRouter.post("/scan-and-record", async (ctx) => {
   const analysisResult = await runMealAnalysis(imageBuffer);
 
   if (!analysisResult.success) {
+    console.log(analysisResult.error);
     const error =
       analysisResult.stage === "recognition"
         ? "Could not identify any food items in the image. Please try again with a clearer photo."
