@@ -47,6 +47,7 @@ export const initMealScan = (containerEl) => {
   const showIdle = () => {
     revokePreview();
     currentFile = null;
+    fileInput.value = "";
     clearContainer();
 
     const zone = document.createElement("div");
@@ -201,7 +202,7 @@ export const initMealScan = (containerEl) => {
           <tr>
             <td>${item.name}</td>
             <td>${item.quantity}</td>
-            <td>${item.calories_kcal}</td>
+            <td>${item.nutrition.calories_kcal}</td>
           </tr>
         `).join("")}
       </tbody>
