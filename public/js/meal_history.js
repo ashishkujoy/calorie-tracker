@@ -237,6 +237,14 @@ export const initMealHistory = async (container, getToken) => {
     const body = groupEl.querySelector(".cs-history-group-body");
     const label = header.querySelector(".cs-history-date").textContent;
     const newHeader = renderGroupHeader(label, remaining.length, newTotals);
+    // Preserve existing collapsed/expanded state when replacing the header
+    if (body.hidden) {
+      newHeader.setAttribute("aria-expanded", "false");
+      newHeader.classList.add("cs-history-group-header--collapsed");
+    } else {
+      newHeader.setAttribute("aria-expanded", "true");
+      newHeader.classList.remove("cs-history-group-header--collapsed");
+    }
     attachToggle(newHeader, body);
     header.replaceWith(newHeader);
   };
