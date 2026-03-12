@@ -26,7 +26,6 @@ mealsRouter.post("/scan-and-record", async (ctx) => {
   }
 
   const imageBuffer = Buffer.from(await image.arrayBuffer());
-  const imageThumbnail = `data:${image.type};base64,${imageBuffer.toString("base64")}`;
   const analysisResult = await runMealAnalysis(imageBuffer);
 
   if (!analysisResult.success) {
@@ -37,6 +36,7 @@ mealsRouter.post("/scan-and-record", async (ctx) => {
     return ctx.json({ error }, 422);
   }
 
+  const imageThumbnail = `data:${image.type};base64,${imageBuffer.toString("base64")}`;
   const user = ctx.get("user");
   const db = ctx.get("db");
 
