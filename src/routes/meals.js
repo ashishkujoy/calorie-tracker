@@ -1,33 +1,14 @@
 import { Hono } from "hono";
+import { ObjectId } from "mongodb";
 import { requireAuth } from "../middleware/requireAuth.js";
+import { runMealAnalysis } from "../meal_agent.js";
+import { insertMeal } from "../models/meal.js";
 
 const mealsRouter = new Hono();
 
 mealsRouter.use("*", requireAuth);
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
-
-const DUMMY_MEAL = {
-  name: "Sample Meal",
-  items: [
-    {
-      name: "Grilled Chicken",
-      quantity: "150g",
-      calories_kcal: 248,
-      protein_g: 46.5,
-      fat_g: 5.4,
-      carbohydrates_g: 0.0,
-    },
-  ],
-  totals: {
-    calories_kcal: 248,
-    protein_g: 46.5,
-    fat_g: 5.4,
-    carbohydrates_g: 0.0,
-    fiber_g: 0.0,
-    sugar_g: 0.0,
-  },
-};
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 mealsRouter.post("/scan-and-record", async (ctx) => {
   const body = await ctx.req.parseBody();
@@ -44,7 +25,28 @@ mealsRouter.post("/scan-and-record", async (ctx) => {
     return ctx.json({ error: "Image exceeds the 10 MB size limit" }, 413);
   }
 
-  return ctx.json({ meal: DUMMY_MEAL });
+  const imageBuffer = Buffer.from(await image.arrayBuffer());
+  const analysisResult = await runMealAnalysis(imageBuffer);
+
+  if (!analysisResult.success) {
+    const error =
+      analysisResult.stage === "recognition"
+        ? "Could not identify any food items in the image. Please try again with a clearer photo."
+        : "Nutrition analysis failed. Please try again.";
+    return ctx.json({ error }, 422);
+  }
+
+  const user = ctx.get("user");
+  const db = ctx.get("db");
+
+  await insertMeal(db, {
+    userId: new ObjectId(user.id),
+    recordedAt: new Date(),
+    items: analysisResult.meal.items,
+    totals: analysisResult.meal.totals,
+  });
+
+  return ctx.json({ meal: analysisResult.meal });
 });
 
 export default mealsRouter;

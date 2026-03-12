@@ -12,6 +12,7 @@ const ensureIndexes = async (db) => {
     { expiresAt: 1 },
     { expireAfterSeconds: 0 },
   );
+  await db.collection("meals").createIndex({ userId: 1 });
 };
 
 export const connectDb = async () => {
