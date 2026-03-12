@@ -110,7 +110,7 @@ const responseSchema = z.object({
 
 export const createCaloriesCounter = () => {
   const llm = new ChatOllama({
-    model: "gpt-oss",
+    model: process.env.GPT_MODEL || "gpt-oss",
     temperature: 0,
   }).withStructuredOutput(responseSchema);
 

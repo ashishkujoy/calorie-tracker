@@ -24,7 +24,7 @@ const createImgMessage = (imgFile) =>
 
 export const createFoodRecogniser = () => {
   const llm = new ChatOllama({
-    model: "gemma3",
+    model: process.env.IMAGE_MODEL || "gemma3",
     temperature: 0,
   }).withStructuredOutput(outputSchema);
 
