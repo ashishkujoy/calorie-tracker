@@ -78,8 +78,8 @@ describe("meal-scan module", () => {
 
   it("[T009] successful fetch renders meal name and at least one item row", async () => {
     const mockMeal = {
-      name: "Grilled Chicken",
-      items: [{ name: "Chicken", quantity: "150g", calories_kcal: 248 }],
+      mealName: "Grilled Chicken",
+      items: [{ name: "Chicken", quantity: "150g", nutrition: { calories_kcal: 248, protein_g: 46.5, fat_g: 5.4, carbohydrates_g: 0, fiber_g: 0, sugar_g: 0 } }],
       totals: { calories_kcal: 248, protein_g: 46.5, fat_g: 5.4, carbohydrates_g: 0 },
     };
     fetch.mockResolvedValue({
