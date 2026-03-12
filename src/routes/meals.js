@@ -49,7 +49,7 @@ mealsRouter.post("/scan-and-record", async (ctx) => {
     totals: analysisResult.meal.totals,
   });
 
-  return ctx.json({ meal: { ...analysisResult.meal, imageThumbnail } });
+  return ctx.json({ meal: analysisResult.meal });
 });
 
 mealsRouter.get("/history", async (ctx) => {

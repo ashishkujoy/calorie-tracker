@@ -75,6 +75,10 @@ export const renderGroupHeader = (label, count, totals) => {
   el.className = "cs-history-group-header";
   el.setAttribute("role", "button");
   el.setAttribute("aria-expanded", "true");
+  el.setAttribute("tabindex", "0");
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.click(); }
+  });
   el.innerHTML = `
     <div class="cs-history-group-top">
       <div class="cs-history-group-title">

@@ -3,7 +3,7 @@
 **Feature Branch**: `002-meal-scan-history`
 **Created**: 2026-03-12
 **Status**: Draft
-**Input**: User description: "View meal scan history. A user should be able to view history of meal scan. Meal scan should be grouped by the dates. And latest scan should be show first. User should be able to delete a particular meal scan, when there is no meal scan for a particular date that group should not be visible to the user. As a part of this spec we also need to provide a short name for the scanned meal."
+**Input**: User description: "View meal scan history. A user should be able to view history of meal scan. Meal scan should be grouped by the dates. And latest scan should be shown first. User should be able to delete a particular meal scan, when there is no meal scan for a particular date that group should not be visible to the user. As a part of this spec we also need to provide a short name for the scanned meal."
 
 ## User Scenarios & Testing *(mandatory)*
 
